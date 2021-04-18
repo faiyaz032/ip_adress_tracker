@@ -16,9 +16,10 @@ const getIpAdress = async function (userInput = '') {
          req = await fetch(`https://geo.ipify.org/api/v1?apiKey=at_cfrCQY3XWlJdiNbSJOIQw7EKObqMh&ipAddress=${userInput}`);
       }
       if (!req.ok) throw new Error('There is a problem with the request');
-      const res = await req.json();
-      const { lat, lng } = res.location;
+      const data = await req.json();
+      const { lat, lng } = data.location;
       displayMap(lat, lng);
+      displayData(data);
    } catch (error) {
       console.error(error);
    }
@@ -36,4 +37,24 @@ const displayMap = function (lat, lng) {
 
    L.marker([lat, lng]).addTo(map).bindPopup().openPopup();
 };
+
+const removeInfoLoader = function () {
+   document.querySelectorAll('.info--loader').forEach((el) => (el.style.display = 'none'));
+   document.querySelectorAll('.user--info').forEach((el) => (el.style.display = 'block'));
+};
+
+const displayData = function (data) {
+   const { city, country, timezone } = data.location;
+   const location = `${city}, ${country}`;
+   const ip = data.ip;
+   const isp = data.isp;
+
+   const infoArr = [ip, location, timezone, isp];
+
+   document.querySelectorAll('.info').forEach((el, i) => {
+      removeInfoLoader();
+      el.innerText = infoArr[i];
+   });
+};
+
 getIpAdress();
