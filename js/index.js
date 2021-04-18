@@ -8,14 +8,19 @@ const searchButton = document.querySelector('.search--btn');
 
 let map;
 
-const getIpAdress = async function (userInput = '') {
+const getIpAdress = async function (userInput = ``) {
    try {
       let req;
+      const regex = /https:|www|.com/gi;
+      const result = userInput.search(regex);
+      if (userInput && result >= 0) {
+         req = await fetch(`https://geo.ipify.org/api/v1?apiKey=at_cfrCQY3XWlJdiNbSJOIQw7EKObqMh&domain=${userInput}`);
+      }
+      if (userInput && result < 0) {
+         req = await fetch(`https://geo.ipify.org/api/v1?apiKey=at_cfrCQY3XWlJdiNbSJOIQw7EKObqMh&ipAddress=${userInput}`);
+      }
       if (!userInput) {
          req = await fetch(`https://geo.ipify.org/api/v1?apiKey=at_cfrCQY3XWlJdiNbSJOIQw7EKObqMh`);
-      }
-      if (userInput) {
-         req = await fetch(`https://geo.ipify.org/api/v1?apiKey=at_cfrCQY3XWlJdiNbSJOIQw7EKObqMh&ipAddress=${userInput}`);
       }
       if (!req.ok) throw new Error('There is a problem with the request');
       const data = await req.json();
